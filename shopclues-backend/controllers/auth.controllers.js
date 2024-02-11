@@ -21,6 +21,14 @@ const registerController = async ( req, res ) => {
         const createNew = new authModel(formData);
         const savedData = await createNew.save();
 
+        if( ! savedData ) {
+            return res.status(400).json({
+                error: "User not created.",
+                status:false,
+                statusCode: 400
+            });
+        }
+
         res.status(201).json({
             message:'Registration success.',
             status: true,
@@ -85,7 +93,6 @@ const loginController = async ( req , res ) => {
             data:userInfo,
             token: user.generateToken( secretKey, userInfo, '1h' )
         });
-
 
     }
     catch(err) {
