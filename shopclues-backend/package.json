@@ -5,8 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
-    "catSeed": "node seeders/productCategories.js"
-    
+    "catSeed": "node seeders/categories.seeder.js",
+    "brandSeed": "node seeders/brands.seeder.js",
+    "productSeed": "node seeders/products.seeder.js"
   },
   "author": "",
   "license": "ISC",

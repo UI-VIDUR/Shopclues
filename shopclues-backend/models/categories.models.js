@@ -5,6 +5,9 @@ const CategoriesSchema = new Schema({
     catName: {
         type: String,
     },
+    catTitle: {
+        type: String,
+    },
     catDescription: {
         type: String
     },
@@ -14,7 +17,7 @@ const CategoriesSchema = new Schema({
     },
     catSlug: {
         type: String,
-        unique: true,
+        unique:true
     }
 }, {
     timestamps: true,
@@ -23,31 +26,49 @@ const CategoriesSchema = new Schema({
 
 /** Middleware => Before saved in the data slug is created. */
 
+CategoriesSchema.pre('save', async function(next){
 
-CategoriesSchema.pre('save', async function (next) {
-
-    if (this.isModified('catName')) {
-
-        this.catSlug = slugify(this.catName, { lower: true });
-
-        const Category = model('Categories');
-
-        let slugExists = await Category.findOne({ catSlug: this.catSlug });
-
-        if (slugExists) {
-            let count = 1;
-            let newSlug = `${this.catSlug}-${count}`;
-            
-            while (await Category.findOne({ catSlug: newSlug })) {
-                count++;
-                newSlug = `${this.catSlug}-${count}`;
-            }
-
-            this.catSlug = newSlug;
-        }
+    this.catName = this.catTitle.toLowerCase();
+    
+    if( ! this.hasOwnProperty('catParent')) {
+        this.catParent = null;
     }
+
+    if( ! this.catSlug ) {
+
+        const CategoriesModel = this.model('Categories');
+
+        let catSlug = slugify(this.catTitle, {
+            replacement: '-',  
+            remove: undefined, 
+            lower: false,      
+            strict: false, 
+            trim: true
+        });
+
+        let existingCategories = await CategoriesModel.find({ catSlug: new RegExp(`^${catSlug}(-[0-9]*)?$`, 'i') });
+
+        if (existingCategories.length > 0) {
+            let highestSuffix = 0;
+            existingCategories.forEach(category => {
+                const regex = /-(\d+)$/;
+                const match = category.catSlug.match(regex);
+                if (match) {
+                    const suffix = parseInt(match[1]);
+                    if (suffix >= highestSuffix) {
+                        highestSuffix = suffix + 1;
+                    }
+                }
+            });
+            catSlug += `-${highestSuffix}`;
+        }
+
+        this.catSlug = catSlug;
+    }
+
     next();
 });
+
 
 
 module.exports = model('Categories', CategoriesSchema);
