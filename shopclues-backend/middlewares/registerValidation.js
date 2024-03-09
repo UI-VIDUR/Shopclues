@@ -1,4 +1,5 @@
 const { body , validationResult } = require('express-validator');
+const authModel = require("../models/auth.models");
 
 const validateForm = () => {
 
@@ -24,7 +25,15 @@ const validateForm = () => {
             .isEmail()
             .withMessage('Email is not valid.')
             .notEmpty()
-            .withMessage('Email should not be empty.'),
+            .withMessage('Email should not be empty.')
+            .custom(async (email) => {
+                let isEmailExist = await authModel.findOne({ email: email });
+                if( isEmailExist ) {
+                    throw new Error("Email already exist.");
+                }
+                return true;
+            }),
+
 
         body('mobileNumber')
             .trim()
@@ -34,12 +43,19 @@ const validateForm = () => {
             .notEmpty()
             .withMessage('Mobile number should not be empty.')
             .isLength({ min: 10, max: 10 })
-            .withMessage('Mobile number must be 10 characters.'),
+            .withMessage('Mobile number must be 10 characters.')
+            .custom(async (mobileNumber) => {
+                let isMobExist = await authModel.findOne({ mobileNumber: mobileNumber });
+                if( isMobExist ) {
+                    throw new Error("Mobile number already registered.");
+                }
+                return true;
+            }),
 
         body('password')
             .trim()
-            .notEmpty()
             .escape()
+            .notEmpty()
             .withMessage('Password should not be empty.')
             .isLength({ min: 8 }).withMessage('Password atleast should be 8 characters.')
             .matches(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{8,}$/)
@@ -69,7 +85,6 @@ const validateErrors = ( req, res, next ) => {
     next();
 }
 
-   
 module.exports = {
     validateForm,
     validateErrors

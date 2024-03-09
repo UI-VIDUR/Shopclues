@@ -1,6 +1,7 @@
 const { Schema, model } = require("mongoose");
 const bcrypt = require('bcrypt');
 const roundSalt = Number(process.env.ROUND_SALT);
+const jwt = require('jsonwebtoken');
 
 const authSchema = new Schema({
     name: {
@@ -30,6 +31,11 @@ const authSchema = new Schema({
     password: {
         type: String,
         required: true,
+    },
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default:'user'
     }
 },
 { timestamps: true });
@@ -57,6 +63,15 @@ authSchema.methods.comparePassword = async function (hashPassword) {
         throw (err);
     }
 }
+
+authSchema.methods.generateToken = function (secretKey , payload , expiresIn) {
+    try {
+        return jwt.sign(payload, secretKey, { expiresIn });
+    }
+    catch (err) {
+        throw err;
+    }
+};
 
 /** Define  method to get the user specific data */
 

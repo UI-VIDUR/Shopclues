@@ -2,10 +2,12 @@
 const express = require("express");
 const router = express.Router();
 const authRouter = require("./auth.routes");
+const catRouter = require("./categories.routes");
 
 /** Middleware => We use all auth routes  */
 
 router.use( '/auth', authRouter );
+router.use( '/category', catRouter );
 
 /** Middleware => When no routes found. */
 
