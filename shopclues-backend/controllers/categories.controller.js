@@ -44,11 +44,28 @@ const createNewCategory = async (req, res) => {
             statusCode:400,
         });
     }
-    
+}
+
+
+const getAllCategories = async ( req, res ) => {
+
+    const data  = CategoriesModel.find({});
+    const categoriesCount = CategoriesModel.find({}).count();
+
+    res.status(200).json({
+        message: 'All categories.',
+        status: true,
+        statusCode: 200,
+        data: {
+            categories: data,
+            totalCategories: categoriesCount,
+        }
+    });
 }
 
 module.exports = {
-    createNewCategory
+    createNewCategory,
+    getAllCategories
 }
 
 
