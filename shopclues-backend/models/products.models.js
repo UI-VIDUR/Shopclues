@@ -49,12 +49,9 @@ const productSchema = new Schema({
 
 
 productSchema.pre('save', async function(next) {
-
-
     const uniqueIdentifier = Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
     const sku = `SKU-${uniqueIdentifier}`;
     this.productSku = sku;
-
     next();
 });
 

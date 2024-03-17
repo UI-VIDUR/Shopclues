@@ -6,6 +6,7 @@ const { validateCategoryBody , validateCategoryResults } = require("../middlewar
 
 router.post('/create',  validateCategoryBody() , validateCategoryResults ,  categoryController.createNewCategory );
 router.get('/?',  categoryController.getAllCategories );
+router.get('/:catid',  categoryController.getCategoryById );
 
 
 module.exports = router;
