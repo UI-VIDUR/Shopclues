@@ -41,7 +41,7 @@ CategoriesSchema.pre('save', async function(next){
         let catSlug = slugify(this.catTitle, {
             replacement: '-',  
             remove: undefined, 
-            lower: false,      
+            lower: true,      
             strict: false, 
             trim: true
         });
