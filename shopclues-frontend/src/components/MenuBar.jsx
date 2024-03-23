@@ -1,7 +1,17 @@
 import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
 const MenuBar = () => {
+
+    let isAuthToken = localStorage.getItem('authToken');
+
+    let history = useNavigate();
+
+    const logout = () => {
+        localStorage.removeItem('authToken');
+        history('/')
+    }
+
   return (
     <header>
       <nav className="bg-slate-800 py-4">
@@ -36,24 +46,39 @@ const MenuBar = () => {
                 </NavLink>
               </li>
             </ul>
-            <ul className="flex items-center gap-3">
-              <li>
-                <NavLink to="/login"
-                  className={({isActive}) => 
-                    `text-gray-200 text-base rounded py-1 px-3 font-medium ${ isActive ? 'bg-slate-700' : 'bg-transparent' } hover:bg-slate-700`
-                  }>
-                  Login
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/register"
-                  className={({isActive}) => 
-                    `text-gray-200 text-base rounded py-1 px-3 font-medium ${ isActive ? 'bg-slate-700' : 'bg-transparent' } hover:bg-slate-700`
-                  }>
-                  Register
-                </NavLink>
-              </li>
-            </ul>
+            { isAuthToken ? 
+                <ul className="flex items-center gap-3">
+                    <li>
+                        <NavLink to="/"
+                            className={({isActive}) => 
+                            `text-gray-200 text-base rounded py-1 px-3 font-medium ${ isActive ? 'bg-slate-700' : 'bg-transparent' } hover:bg-slate-700`
+                            }
+                            onClick={logout}
+                            >
+                            Logout
+                        </NavLink>
+                    </li>
+                </ul>
+            : 
+                <ul className="flex items-center gap-3">
+                <li>
+                    <NavLink to="/login"
+                    className={({isActive}) => 
+                        `text-gray-200 text-base rounded py-1 px-3 font-medium ${ isActive ? 'bg-slate-700' : 'bg-transparent' } hover:bg-slate-700`
+                    }>
+                    Login
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink to="/register"
+                    className={({isActive}) => 
+                        `text-gray-200 text-base rounded py-1 px-3 font-medium ${ isActive ? 'bg-slate-700' : 'bg-transparent' } hover:bg-slate-700`
+                    }>
+                    Register
+                    </NavLink>
+                </li>
+                </ul>
+            }
           </div>
         </div>
       </div>

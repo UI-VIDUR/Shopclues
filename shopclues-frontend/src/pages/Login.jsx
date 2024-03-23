@@ -17,7 +17,12 @@ const Login = () => {
             const response = await axios.post('http://localhost:3001/auth/login', credentials, {
                 headers: {'Content-Type': 'application/json'}
             });
-            console.log(response)
+            const {data} = response
+            if(data.statusCode == 200 && data.status){
+                // login successfull
+                localStorage.setItem('authToken', data.token);
+            }
+            console.log(data)
             history('/dashboard')
         } catch (error) {
             console.log(error)
